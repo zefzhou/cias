@@ -12,8 +12,8 @@ async function main() {
     const privateKey = process.env.PRIVATE_KEY; //主账户私钥
     const wallet = await DirectSecp256k1Wallet.fromKey(Buffer.from(privateKey, "hex"), chain);
     const [account] = await wallet.getAccounts();
-    const gasPrice = GasPrice.fromString(`0.025${denom}`); // no need
-    const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, wallet, { gasPrice: gasPrice });
+    // const gasPrice = GasPrice.fromString(`0.025${denom}`); // no need
+    const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, wallet);
     const balance = await client.getBalance(account.address, denom);
     // const balance = await client.getBalance('celestia1x8pl6xa3sxj49du4758cf8mutk4cu7uha04eyc', denom);
     console.log(`主账户地址: ${account.address} 余额: ${  balance.amount / tokenDecimal }`);
@@ -24,7 +24,7 @@ async function main() {
     for (const recipient of recipients) {
         try {
             const fee = {
-                amount: coins(process.env.GAS_PRICE, denom),
+                amount: coins(process.env.GAS_AMOUNT, denom),
                 gas: process.env.GAS_LIMIT,
             };
             const result = await client.sendTokens(account.address, recipient, amount, fee);
