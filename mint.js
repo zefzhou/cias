@@ -8,11 +8,11 @@ async function performTransaction(walletInfo, numberOfTimes) {
     const denom = process.env.TOKEN_DENOM;
     const chain = process.env.CHAIN_SYMBOL;
     const rpcEndpoint = process.env.NODE_URL;
-    const gasPrice = GasPrice.fromString(`0.025${denom}`);
+    // const gasPrice = GasPrice.fromString(`0.025${denom}`);
     const wallet = await DirectSecp256k1Wallet.fromKey(Buffer.from(walletInfo.privateKey, "hex"), chain);
-    const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, wallet, { gasPrice: gasPrice });
+    const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, wallet);
     const fee = {
-        amount: coins(process.env.GAS_PRICE, denom),
+        amount: coins(process.env.GAS_AMOUNT, denom),
         gas: process.env.GAS_LIMIT,
     };
     console.log(`init`);
