@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { SigningStargateClient, GasPrice, coins } = require("@cosmjs/stargate");
 const { DirectSecp256k1Wallet } = require('@cosmjs/proto-signing');
-const {readFileSync} = require("fs");
+const { readFileSync } = require("fs");
 
 async function main() {
     const denom = process.env.TOKEN_DENOM;
@@ -12,15 +12,13 @@ async function main() {
     const privateKey = process.env.PRIVATE_KEY; //主账户私钥
     const wallet = await DirectSecp256k1Wallet.fromKey(Buffer.from(privateKey, "hex"), chain);
     const [account] = await wallet.getAccounts();
-    // const gasPrice = GasPrice.fromString(`0.025${denom}`); // no need
     const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, wallet);
     const balance = await client.getBalance(account.address, denom);
-    // const balance = await client.getBalance('celestia1x8pl6xa3sxj49du4758cf8mutk4cu7uha04eyc', denom);
-    console.log(`主账户地址: ${account.address} 余额: ${  balance.amount / tokenDecimal }`);
+    console.log(`主账户地址: ${account.address} 余额: ${balance.amount / tokenDecimal}`);
     const wallets = JSON.parse(readFileSync(walletsFile, 'utf-8'));
     const recipients = wallets.map(wallet => wallet.address);
 
-    const amount = coins(parseInt(parseFloat(process.env.TOKEN_TRANSFER_AMOUNT) * tokenDecimal) ,denom);
+    const amount = coins(parseInt(parseFloat(process.env.TOKEN_TRANSFER_AMOUNT) * tokenDecimal), denom);
     for (const recipient of recipients) {
         try {
             const fee = {

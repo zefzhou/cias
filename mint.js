@@ -2,13 +2,12 @@ require('dotenv').config();
 const { SigningStargateClient, GasPrice, coins } = require("@cosmjs/stargate");
 const { DirectSecp256k1Wallet } = require('@cosmjs/proto-signing');
 const { readFileSync } = require("fs");
-const {base64FromBytes} = require("cosmjs-types/helpers");
+const { base64FromBytes } = require("cosmjs-types/helpers");
 
 async function performTransaction(walletInfo, numberOfTimes) {
     const denom = process.env.TOKEN_DENOM;
     const chain = process.env.CHAIN_SYMBOL;
     const rpcEndpoint = process.env.NODE_URL;
-    // const gasPrice = GasPrice.fromString(`0.025${denom}`);
     const wallet = await DirectSecp256k1Wallet.fromKey(Buffer.from(walletInfo.privateKey, "hex"), chain);
     const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, wallet);
     const fee = {
@@ -19,14 +18,14 @@ async function performTransaction(walletInfo, numberOfTimes) {
     let successCount = 0;
     let attemptCount = 0;
 
-    const tick = process.env.TICK 
+    const tick = process.env.TICK
     const protocol = process.env.PROTOCOL
     const mintAmount = parseInt(process.env.MINT_AMOUNT)
 
     while (successCount < numberOfTimes) {
         try {
             const [account] = await wallet.getAccounts();
-            const amount = coins(1, denom); // 自转1,按需修改
+            const amount = coins(1, denom); // 自转1
             const memo = `data:,{"op":"mint","amt":${mintAmount},"tick":"${tick}","p":"${protocol}"}`; // 这里可能会变化
             console.log(`memo = ${memo}`);
 
@@ -64,7 +63,7 @@ async function main() {
     const client = await SigningStargateClient.connectWithSigner(process.env.NODE_URL, wallet);
     const balance = await client.getBalance(walletAddress, denom);
     console.log(`地址: ${walletAddress} 余额: ${parseFloat(balance.amount) / tokenDecimal}`);
-    walletData.push(    {
+    walletData.push({
         "address": walletAddress,
         "privateKey": privateKey
     });
